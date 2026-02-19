@@ -1,5 +1,17 @@
-# 🔎 SOC Investigation — Azuki Import/Export  
-### Microsoft Defender for Endpoint + Microsoft Sentinel (KQL)
+# 🛡 SOC Investigation — Azuki Import/Export
+### Microsoft Defender for Endpoint | Microsoft Sentinel | KQL Threat Hunting
+
+---
+
+## 🏅 Professional Badges
+
+![Security+](https://img.shields.io/badge/CompTIA-Security%2B-red)
+![Microsoft Sentinel](https://img.shields.io/badge/Microsoft-Sentinel-blue)
+![Microsoft Defender](https://img.shields.io/badge/MDE-Advanced%20Hunting-green)
+![KQL](https://img.shields.io/badge/KQL-Query%20Language-purple)
+![MITRE ATT&CK](https://img.shields.io/badge/MITRE-ATT%26CK-black)
+![Threat Hunting](https://img.shields.io/badge/SOC-Threat%20Hunting-darkgreen)
+![Detection Engineering](https://img.shields.io/badge/Detection-Engineering-orange)
 
 ---
 
@@ -21,10 +33,10 @@ This project demonstrates practical SIEM engineering, threat hunting, detection 
 
 ## 🎯 Incident Summary
 
-**Target System:** AZUKI-SL (IT Admin Workstation)  
-**Initial Access Vector:** RDP (RemoteInteractive Logon)  
-**Compromised Account:** kenji.sato  
-**External IP:** 88.97.178.12  
+**Target System:** AZUKI-SL (IT Admin Workstation)
+**Initial Access Vector:** RDP (RemoteInteractive Logon)
+**Compromised Account:** kenji.sato
+**External IP:** 88.97.178.12
 
 The attacker successfully:
 
@@ -64,20 +76,23 @@ See `/docs/timeline.md` for full breakdown.
 
 ---
 
-## 🧬 MITRE ATT&CK Mapping
+## 🎯 Visual Attack Chain Overview
 
 ```mermaid
 flowchart LR
-A[Initial Access<br>T1021.001 RDP] --> B[Discovery<br>T1046 Network Recon]
-B --> C[Defense Evasion<br>T1562 Modify Defender]
-C --> D[Execution<br>T1105 Ingress Tool Transfer]
-D --> E[Persistence<br>T1053 Scheduled Task]
-E --> F[Credential Access<br>T1003 LSASS Dump]
-F --> G[Collection<br>T1560 Archive Data]
-G --> H[Exfiltration<br>T1567 Web Service]
-H --> I[Anti-Forensics<br>T1070 Clear Logs]
-I --> J[Lateral Movement<br>T1021 Remote Services]
+A[Initial Access<br>RDP T1021.001] --> B[Discovery<br>ARP Recon T1046]
+B --> C[Defense Evasion<br>Defender Tampering T1562]
+C --> D[Execution<br>certutil LOLBin T1105]
+D --> E[Persistence<br>Scheduled Task T1053]
+E --> F[Credential Access<br>LSASS Dump T1003]
+F --> G[Collection<br>Archive Data T1560]
+G --> H[Exfiltration<br>Discord HTTPS T1567]
+H --> I[Anti-Forensics<br>Clear Logs T1070]
+I --> J[Lateral Movement<br>RDP T1021]
 ```
+
+This diagram represents the reconstructed attack progression using enterprise telemetry.
+
 ---
 
 ## 🔍 Detection Engineering Highlights
@@ -86,14 +101,31 @@ I --> J[Lateral Movement<br>T1021 Remote Services]
 
 The investigation relied on structured KQL hunts across both endpoint and SIEM telemetry:
 
-- **DeviceLogonEvents** – RDP authentication analysis and compromised account identification  
-- **DeviceProcessEvents** – LOLBin abuse, scheduled task creation, PowerShell execution  
-- **DeviceRegistryEvents** – Windows Defender exclusion tampering detection  
-- **DeviceNetworkEvents** – C2 traffic and exfiltration analysis  
-- **SigninLogs (Sentinel)** – Identity anomaly validation  
-- **SecurityEvent** – RDP logon and authentication pattern analysis  
+- **DeviceLogonEvents** – RDP authentication analysis and compromised account identification
+- **DeviceProcessEvents** – LOLBin abuse, scheduled task creation, PowerShell execution
+- **DeviceRegistryEvents** – Windows Defender exclusion tampering detection
+- **DeviceNetworkEvents** – C2 traffic and exfiltration analysis
+- **SigninLogs (Sentinel)** – Identity anomaly validation
+- **SecurityEvent** – RDP logon and authentication pattern analysis
 
 Reusable queries are available in the `/queries/` directory.
+
+---
+
+## 📊 Detection Coverage Matrix
+
+| ATT&CK Tactic | Technique | Detection Source | Coverage Status |
+|---|---|---|---|
+| Initial Access | T1021.001 – RDP | DeviceLogonEvents | ✅ Confirmed |
+| Discovery | T1046 – Network Recon | DeviceProcessEvents | ✅ Confirmed |
+| Defense Evasion | T1562 – Modify Defender | DeviceRegistryEvents | ✅ Confirmed |
+| Execution | T1105 – Ingress Tool Transfer | DeviceProcessEvents | ✅ Confirmed |
+| Persistence | T1053 – Scheduled Task | DeviceProcessEvents | ✅ Confirmed |
+| Credential Access | T1003 – LSASS Dump | DeviceProcessEvents | ✅ Confirmed |
+| Collection | T1560 – Archive Data | DeviceProcessEvents | ✅ Confirmed |
+| Exfiltration | T1567 – Web Service | DeviceNetworkEvents | ✅ Confirmed |
+| Anti-Forensics | T1070 – Clear Logs | DeviceProcessEvents | ✅ Confirmed |
+| Lateral Movement | T1021 – Remote Services | DeviceLogonEvents | ⚠ Attempted |
 
 ---
 
@@ -101,7 +133,7 @@ Reusable queries are available in the `/queries/` directory.
 
 ### 🛡 Defender Tampering
 
-The attacker modified Windows Defender exclusion registry keys to bypass detection and excluded the local Temp directory from scanning.  
+The attacker modified Windows Defender exclusion registry keys to bypass detection and excluded the local Temp directory from scanning.
 
 This allowed malicious payloads to execute without AV inspection.
 
@@ -131,7 +163,7 @@ This provided reliable persistence across reboots.
 
 The attacker deployed a credential theft tool:
 
-`mm.exe`  
+`mm.exe`
 `sekurlsa::logonpasswords`
 
 This indicates LSASS memory dumping to extract plaintext credentials and authentication material.
@@ -212,5 +244,4 @@ All findings were documented using structured SOC methodology and aligned to MIT
 - Convert hunts into Sentinel Analytics Rules
 - Build automated detection dashboards
 - Add incident response playbook
-- Add detection coverage matrix
 - Add IOC export automation
