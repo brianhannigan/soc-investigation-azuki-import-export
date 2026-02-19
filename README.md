@@ -77,7 +77,7 @@ F --> G[Collection<br>T1560 Archive Data]
 G --> H[Exfiltration<br>T1567 Web Service]
 H --> I[Anti-Forensics<br>T1070 Clear Logs]
 I --> J[Lateral Movement<br>T1021 Remote Services]
-'''
+```
 ---
 
 ## 🔍 Detection Engineering Highlights
@@ -119,6 +119,68 @@ This demonstrates Living-Off-the-Land Binary (LOLBIN) abuse to evade traditional
 
 A scheduled task was created:
 
+`Windows Update Check`
+
+The task executed a malicious payload at user logon with SYSTEM privileges.
+
+This provided reliable persistence across reboots.
+
+---
+
+### 🔐 Credential Dumping
+
+The attacker deployed a credential theft tool:
+
+`mm.exe`  
+`sekurlsa::logonpasswords`
+
+This indicates LSASS memory dumping to extract plaintext credentials and authentication material.
+
+---
+
+### 📦 Data Staging & Archive Creation
+
+Stolen files were compressed into:
+
+`export-data.zip`
+
+This archive was prepared for outbound exfiltration.
+
+---
+
+### 🌐 Data Exfiltration
+
+Data was transmitted via Discord over HTTPS (port 443), blending malicious traffic with legitimate encrypted web traffic.
+
+---
+
+### 🧹 Anti-Forensics
+
+Security logs were cleared using:
+
+`wevtutil.exe cl Security`
+
+This action attempted to erase authentication and privilege escalation evidence.
+
+---
+
+## 📂 Repository Structure
+
+```text
+docs/
+├── report.md
+├── timeline.md
+├── mitre-mapping.md
+├── iocs.md
+└── query-pack.md
+
+queries/
+├── mde/
+└── sentinel/
+
+assets/
+└── screenshots/
+```
 
 
 ---
