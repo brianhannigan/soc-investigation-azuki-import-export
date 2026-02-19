@@ -1,0 +1,7 @@
+// Initial Access — RDP / Remote interactive logons
+DeviceLogonEvents
+| where DeviceName =~ "azuki-sl"
+| where Timestamp > ago(30d)
+| where LogonType in ("RemoteInteractive", "RemoteInteractiveCached", "Network")
+| project Timestamp, DeviceName, AccountName, AccountDomain, LogonType, RemoteIP, RemotePort, InitiatingProcessFileName
+| order by Timestamp asc

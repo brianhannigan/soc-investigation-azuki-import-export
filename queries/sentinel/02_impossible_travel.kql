@@ -1,0 +1,5 @@
+// Sentinel — simplistic impossible travel heuristic (requires location fields populated)
+SigninLogs
+| where TimeGenerated > ago(30d)
+| project TimeGenerated, UserPrincipalName, IPAddress, Location, ResultType
+| order by TimeGenerated desc

@@ -1,0 +1,7 @@
+// Exfiltration — suspicious outbound connections from staging host
+DeviceNetworkEvents
+| where DeviceName =~ "azuki-sl"
+| where Timestamp > ago(30d)
+| where ActionType in ("ConnectionSuccess","ConnectionAttempt")
+| project Timestamp, InitiatingProcessFileName, InitiatingProcessCommandLine, RemoteIP, RemotePort, RemoteUrl, Protocol
+| order by Timestamp asc

@@ -1,0 +1,9 @@
+// Persistence — Registry Run keys + Scheduled Tasks creation
+let runKeys = dynamic(["\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
+                       "\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce"]);
+DeviceRegistryEvents
+| where DeviceName =~ "azuki-sl"
+| where Timestamp > ago(30d)
+| where RegistryKey has_any (runKeys)
+| project Timestamp, DeviceName, AccountName, ActionType, RegistryKey, RegistryValueName, RegistryValueData, InitiatingProcessFileName
+| order by Timestamp asc

@@ -1,0 +1,5 @@
+// Sentinel — look for large outbound patterns (requires network logs / proxy / firewall ingestion)
+CommonSecurityLog
+| where TimeGenerated > ago(30d)
+| summarize Events=count() by SourceIP, DestinationIP, DestinationPort, bin(TimeGenerated, 1h)
+| order by Events desc

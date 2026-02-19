@@ -1,0 +1,6 @@
+// Account compromise — unusual logon bursts / new admin tools usage
+DeviceLogonEvents
+| where DeviceName =~ "azuki-sl"
+| where Timestamp > ago(30d)
+| summarize LogonCount=count(), IPs=make_set(RemoteIP, 20), LogonTypes=make_set(LogonType, 10) by AccountName, bin(Timestamp, 1h)
+| order by Timestamp asc

@@ -1,0 +1,7 @@
+// Sentinel — Windows SecurityEvent for RDP brute force (if ingested)
+SecurityEvent
+| where TimeGenerated > ago(30d)
+| where EventID in (4625, 4624)
+| where LogonType == 10
+| summarize Attempts=count(), Successes=countif(EventID==4624) by Account, IpAddress, bin(TimeGenerated, 1h)
+| order by Attempts desc

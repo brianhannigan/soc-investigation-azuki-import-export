@@ -1,0 +1,5 @@
+// Sentinel — suspicious sign-ins (failures, unfamiliar IPs, unusual locations)
+SigninLogs
+| where TimeGenerated > ago(30d)
+| summarize Total=count(), Failures=countif(ResultType != 0) by UserPrincipalName, IPAddress, bin(TimeGenerated, 1h)
+| order by Failures desc

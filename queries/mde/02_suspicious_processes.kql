@@ -1,0 +1,7 @@
+// Execution — suspicious LOLBins / scripting / unusual parents
+DeviceProcessEvents
+| where DeviceName =~ "azuki-sl"
+| where Timestamp > ago(30d)
+| where FileName in~ ("powershell.exe","cmd.exe","wscript.exe","cscript.exe","mshta.exe","rundll32.exe","regsvr32.exe","certutil.exe","bitsadmin.exe","curl.exe","wget.exe")
+| project Timestamp, AccountName, FileName, ProcessCommandLine, InitiatingProcessFileName, InitiatingProcessCommandLine, SHA256
+| order by Timestamp asc
