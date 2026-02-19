@@ -1,7 +1,6 @@
-# 🛡 SOC Investigation — Azuki Import/Export
-### Microsoft Defender for Endpoint | Microsoft Sentinel | KQL Threat Hunting
-
----
+<p align="center">
+  <img src="assets/soc-hero-banner.svg" alt="SOC Investigation – Detection Engineering" width="100%" />
+</p>
 
 ## 🏅 Professional Badges
 
